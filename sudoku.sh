@@ -28,15 +28,36 @@ function readLine() {
 	done
 }
 
+function readFromFile() {
+	local fileName
+	local num
+	local i
+
+	while [[ 1 ]]
+	do
+		read -p "please input file name:" fileName
+		if [[ -f $fileName ]]
+		then
+			break
+		fi
+	done
+	i=0
+	for num in `cat $fileName`;
+	do
+		sudoku[((i++))]=$num
+	done
+}
+
 function canLine () {
 	local col
+	local idx
 	for (( col=1; col <=9; col++ ))
 	do
 		if [[ $col == $2 ]] ; then continue; fi
 		((idx=( $1-1 )*9 + ( $col-1 )))
 		if [[ ${sudoku[$idx]} == $3 ]] 
 		then 
-			echo "line:$1 colume:$col num:${sudoku[$idx]} result:false"
+#			echo "line:$1 colume:$col num:${sudoku[$idx]} result:false"
 			return 1
 		fi
 	done
@@ -46,13 +67,14 @@ function canLine () {
 
 function canColume () {
 	local line
+	local idx
 	for (( line=1; line<=9; line++ ))
 	do
 		if [[ $line == $1 ]]; then continue; fi
 		if [[ ${sudoku[ ((($line-1)*9 + ($2-1)))]} == $3 ]] 
 		then 
 			((idx=( $line-1 )*9 + ( $2-1 )))
-			echo "line:$line colume:$2 num:${sudoku[$idx]} result:false"
+#			echo "line:$line colume:$2 num:${sudoku[$idx]} result:false"
 			return 1 
 		fi
 	done
@@ -64,17 +86,17 @@ function canSqure() {
 	local line
 	local col
 	local num
+	local idx
 	for (( line=1; line <= 9; line++ ))
 	do
 		if (( (line-1)/3 != ($1-1)/3 )); then continue; fi
 		for (( col=1; col <=9; col++ ))
 		do
 			if (( (col-1)/3 != ($2-1)/3 )); then continue; fi
-			echo "line:$line col:$col"
-			if (( ${sudoku[ ((( $line-1 )*9 + ( $col-1 ))) ]} == $3 )) 
+			if ((${sudoku[ ((( $line-1 )*9 + ( $col-1 )))]}==$3)) 
 			then
 				(( idx=( $line-1 )*9 + ( $col-1 )))
-				echo "line:$line colume:$col num:${sudoku[$idx]}, result:false"
+#				echo "line:$line colume:$col num:${sudoku[$idx]}, result:false"
 				return 1 
 			fi
 		done
@@ -100,54 +122,98 @@ function printSudoku() {
 	done
 }
 
+function printSudoku1() {
+	echo "    1  2  3   4  5  6   7  8  9 "
+	echo
+	for (( line=0; line<9; line++))
+	do
+		(( lno=$line+1 ))
+		printf "%d   "  $lno 
+		for (( col=0; col<9; col++))
+		do
+			echo -n "${sudoku1[(($line*9+$col))]}  "
+			if (( (col+1)%3 == 0 )) ; then echo -n " "; fi
+		done
+		echo 
+		if (( lno%3 ==  0 )) ; then echo ; fi
+	done
+}
+
+function copy () {
+	local i
+	for (( i=0; i<81; i++ ))
+	do
+		sudoku1[$i]=${sudoku[$i]}
+	done
+}
+
 function autocomplete () {
-	echo $1
-	if (( sudoku[$1] != 0 ))  
-	then 
-		if (( $1 == 80 ))
-		then
-			return 0
-		else 
-			autocomplete `(( $1+1 ))` 
-		fi
-	fi
 	local i;
 	local j;
 	local n;
 	local t;
-	(( i=$1/9+1 )) && (( j=$1%9+1 ))
+	local idx;
+	local next;
+
+	idx=$1
+	echo "sum:$@,idx:$idx"
+	if [[ ${sudoku1[$idx]} != 0  ]] 
+	then 
+		if (( idx >= 80 ))
+		then
+			return 0
+		else 
+			(( next=idx+1 ))
+			autocomplete $next
+			return $?
+		fi
+	fi
+	(( i=idx/9+1 )) 
+	(( j=idx%9+1 ))
+	printSudoku
 	for (( n=1; n<=9; n++ ))
 	do 
 		echo "line:$i colume:$j num:$n"
-		if [[ $(canLine $i $j $n) && $(canColume $i $j $n) && $(canSqure $i $j $n) ]]
+		canLine $i $j $n && canColume $i $j $n && canSqure $i $j $n
+		if [[ $? == 0 ]]
 		then
-			sudoku[$1]=$n
-			if [[ $(autocomplete $( (($1+1)) ) ) ]]
+			echo "n:$n"
+			sudoku[$idx]=$n
+			(( next=idx+1 ))
+			autocomplete $next
+			if [[ $? == 0 ]]
 			then
+				echo "break"
 				break;
 			else
+				echo "continue"
 				continue;
 			fi
 		else
+			echo "...continue"
 			continue;
 		fi
 	done
 	if (( n==10 )) 
 	then
-		sudoku[$1]=0
+		sudoku[$idx]=0
 		return 1
 	else
+		printSudoku
 		return 0
 	fi
 }
 
-select name in input auto undo show quit
+select name in input file copy auto undo show quit
 do
 	[[ "$name" == "input" ]] &&  readLine 
-	[[ "$name" == "undo" ]] &&  echo "TBD" 
-	[[ "$name" == "auto" ]] &&  canLine 1 1 2 && canColume 1 1 2 && canSqure 1 1 2
+	[[ "$name" == "file" ]] && readFromFile
+	[[ "$name" == "copy" ]] && copy
+	[[ "$name" == "undo" ]] && echo "TBD" 
+	[[ "$name" == "auto" ]] && copy && autocomplete 0
 	[[ "$name" == "show" ]] && printSudoku
 	[[ "$name" == "quit" ]] && exit 0
+	printSudoku
 done
 
 
