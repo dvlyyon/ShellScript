@@ -206,7 +206,7 @@ do
 	[[ "$name" == "source from file" ]] && readFromFile
 	[[ "$name" == "copy" ]] && copy
 	[[ "$name" == "undo" ]] && echo "TBD" 
-	[[ "$name" == "complete by machine" ]] && copy && autocomplete 0
+	[[ "$name" == "complete by machine" ]] && copy && time autocomplete 0
 	[[ "$name" == "original" ]] && printSudoku1
 	[[ "$name" == "quit" ]] && exit 0
 	printSudoku
