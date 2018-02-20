@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "sudoku[$1,$2]=$3 $#"
-
 declare -a sudoku
 for (( i=0; i<81; i++ ))
 do
@@ -61,7 +59,7 @@ function canLine () {
 			return 1
 		fi
 	done
-	echo "line:$1 colume:$2 num:$3 result:true"
+#	echo "line:$1 colume:$2 num:$3 result:true"
 	return 0
 }
 
@@ -78,7 +76,7 @@ function canColume () {
 			return 1 
 		fi
 	done
-	echo "line:$1 colume:$2 num:$3 result:true"
+#	echo "line:$1 colume:$2 num:$3 result:true"
 	return 0
 }
 
@@ -101,7 +99,7 @@ function canSqure() {
 			fi
 		done
 	done
-	echo "line:$1 colume:$2 num:$3 result:true"
+#	echo "line:$1 colume:$2 num:$3 result:true"
 	return 0	
 }
 
@@ -170,27 +168,26 @@ function autocomplete () {
 	fi
 	(( i=idx/9+1 )) 
 	(( j=idx%9+1 ))
-	printSudoku
 	for (( n=1; n<=9; n++ ))
 	do 
-		echo "line:$i colume:$j num:$n"
+	#	echo "line:$i colume:$j num:$n"
 		canLine $i $j $n && canColume $i $j $n && canSqure $i $j $n
 		if [[ $? == 0 ]]
 		then
-			echo "n:$n"
+	#		echo "n:$n"
 			sudoku[$idx]=$n
 			(( next=idx+1 ))
 			autocomplete $next
 			if [[ $? == 0 ]]
 			then
-				echo "break"
+	#			echo "break"
 				break;
 			else
-				echo "continue"
+	#			echo "continue"
 				continue;
 			fi
 		else
-			echo "...continue"
+	#		echo "...continue"
 			continue;
 		fi
 	done
@@ -199,19 +196,18 @@ function autocomplete () {
 		sudoku[$idx]=0
 		return 1
 	else
-		printSudoku
 		return 0
 	fi
 }
 
-select name in input file copy auto undo show quit
+select name in "manual input" "source from file" "copy" "complete by machine" "undo" "original" "quit"
 do
-	[[ "$name" == "input" ]] &&  readLine 
-	[[ "$name" == "file" ]] && readFromFile
+	[[ "$name" == "manual input" ]] &&  readLine 
+	[[ "$name" == "source from file" ]] && readFromFile
 	[[ "$name" == "copy" ]] && copy
 	[[ "$name" == "undo" ]] && echo "TBD" 
-	[[ "$name" == "auto" ]] && copy && autocomplete 0
-	[[ "$name" == "show" ]] && printSudoku
+	[[ "$name" == "complete by machine" ]] && copy && autocomplete 0
+	[[ "$name" == "original" ]] && printSudoku1
 	[[ "$name" == "quit" ]] && exit 0
 	printSudoku
 done
