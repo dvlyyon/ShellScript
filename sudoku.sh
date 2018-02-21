@@ -105,19 +105,28 @@ function canSqure() {
 
 function printSudoku() {
 	echo "    1  2  3   4  5  6   7  8  9 "
-	echo
+	echo -e "  \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510"
 	for (( line=0; line<9; line++))
 	do
 		(( lno=$line+1 ))
-		printf "%d   "  $lno 
+		printf "%d \u2502 "  $lno 
 		for (( col=0; col<9; col++))
 		do
-			echo -n "${sudoku[(($line*9+$col))]}  "
-			if (( (col+1)%3 == 0 )) ; then echo -n " "; fi
+			if (( (col+1)%3 == 0 ))  
+			then 
+				echo -ne "${sudoku[(($line*9+$col))]} \u2502 "
+			else
+				echo -ne "${sudoku[(($line*9+$col))]}  "
+			fi
 		done
-		echo 
-		if (( lno%3 ==  0 )) ; then echo ; fi
+		if (( line < 8 )); then echo; fi
+		if (( lno%3 ==  0 && lno != 9))  
+		then 
+			echo -e "  \u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524"
+	       	fi
 	done
+	echo
+	echo -e "  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518"
 }
 
 function printSudoku1() {
@@ -154,7 +163,7 @@ function autocomplete () {
 	local next;
 
 	idx=$1
-	echo "sum:$@,idx:$idx"
+#	echo "idx:$idx"
 	if [[ ${sudoku1[$idx]} != 0  ]] 
 	then 
 		if (( idx >= 80 ))
