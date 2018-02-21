@@ -112,11 +112,17 @@ function printSudoku() {
 		printf "%d \u2502 "  $lno 
 		for (( col=0; col<9; col++))
 		do
+            if [[ ${sudoku[(($line*9+$col))]} == 0 ]]
+            then
+                echo -n " "
+            else
+                echo -n ${sudoku[(($line*9+$col))]}
+            fi
 			if (( (col+1)%3 == 0 ))  
 			then 
-				echo -ne "${sudoku[(($line*9+$col))]} \u2502 "
+				echo -ne " \u2502 "
 			else
-				echo -ne "${sudoku[(($line*9+$col))]}  "
+				echo -ne "  "
 			fi
 		done
 		if (( line < 8 )); then echo; fi
