@@ -1,12 +1,13 @@
 #!/bin/bash
 
 vDate=`date +%Y%m%d` 
-vHost="172.16.22.244"
+vHost="172.29.22.244"
 vUser=user
-vPasswd=name
+vPasswd=password
 vFile=YANG.tar.gz
 vExecute="du"
-while getopts "w:u:p:h:l:d:f:e:" vOption
+vFType=yang
+while getopts "w:u:p:h:l:d:f:e:t:r" vOption
 do
 	case ${vOption} in
 		w) vWork=$OPTARG ;;
@@ -17,9 +18,13 @@ do
         f) vFile=$OPTARG ;;
 		d) vDate=$OPTARG ;;
         e) vExecute=$OPTARG ;;
+        t) vFType=$OPTARG ;;
+        r) vRelease=RELEASE;;
 		?) echo "unknown option ${vOption}" ;;
 	esac
 done
+
+[[ "$vFType" == "image" ]] && { vFile="GROOVE_G30_${vLoadNum}_${vDate}.*"; }
 
 echo "work directory:$vWork"
 echo "user: ${vUser}  password: ${vPasswd}"
@@ -27,13 +32,14 @@ echo "host: ${vHost}"
 echo "load Number: ${vLoadNum}"
 echo "date: ${vDate} "
 echo "file: ${vFile}"
+echo "file type: ${vFType}"
 echo "execute: ${vExecute}"
 
-[ "x${vLoadNum}" == "x" ] && { echo "usage ftpFile.sh [-w work_directory] [-u user] [-p password] [-h host] -l load_num [-d date] [-f file_name] [-e what_to_do]"; exit 1; }
+[ "x${vLoadNum}" == "x" ] && { echo "usage ftpFile.sh [-w work_directory] [-u user] [-p password] [-h host] -l load_num [-d date] [-f file_name] [-t \{yang|image\}] [-e what_to_do]"; exit 1; }
 
 function download {
     test -f ${vFile} && { echo "delete ${vFile} ..."; rm ${vFile}; }
-    vFullFile="/path/prefix_${vLoadNum}/prefix_${vLoadNum}_${vDate}/${vFile}"
+    vFullFile="/LoadBuild/DCI${vLoadNum}/${vRelease}/GROOVE_G30_${vLoadNum}_${vDate}/${vFile}"
     echo "try get from $vHost file $vFullFile"
     test -f /usr/bin/expect || { echo "expect must be installed"; exit 1; }
 /usr/bin/expect << EOF
@@ -103,3 +109,4 @@ then
     fi
 fi
 
+# vim: syntax=bash

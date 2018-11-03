@@ -17,6 +17,8 @@ for p in `find . -type d`; do
     path=$p:$path
 done
 
+output=$(basename ${module}).html
+
 #pyang ne.yang -p $path -f tree -o tree.txt
 pyang $module -p $path -f jstree -o $output
 
