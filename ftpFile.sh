@@ -24,16 +24,25 @@ do
 	esac
 done
 
+[[ "$vUser" == "user" ]] && { read -t 30 -p "Please input user name:" vUser; }
+[[ "$vPasswd" == "password" ]] && { read -s -t 30 -p "Please input password:" vPasswd; }
 [[ "$vFType" == "image" ]] && { vFile="GROOVE_G30_${vLoadNum}_${vDate}.*"; }
 
+echo -e "\n\nPlease make sure the following information:"
+echo "----------------------------------------------"
 echo "work directory:$vWork"
-echo "user: ${vUser}  password: ${vPasswd}"
+echo "user: ${vUser},  password: ${vPasswd}"
 echo "host: ${vHost}"
 echo "load Number: ${vLoadNum}"
 echo "date: ${vDate} "
 echo "file: ${vFile}"
 echo "file type: ${vFType}"
 echo "execute: ${vExecute}"
+echo "-----------------------------------------------"
+vConfirm=Y
+read -t 30 -p "Are you sure?:[N]" vConfirm
+echo $vConfirm
+[[ "X$vConfirm" != "XY" ]] && exit 1;
 
 [ "x${vLoadNum}" == "x" ] && { echo "usage ftpFile.sh [-w work_directory] [-u user] [-p password] [-h host] -l load_num [-d date] [-f file_name] [-t \{yang|image\}] [-e what_to_do]"; exit 1; }
 
