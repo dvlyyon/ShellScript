@@ -1,0 +1,30 @@
+#!/bin/bash
+
+while getopts "u:m:d:" op
+do
+	case $op in
+	u)
+		user_name=$OPTARG;;
+	m)	
+		mount_point=$OPTARG;;
+	d)
+		device=$OPTARG;;
+	?)
+		echo "cannot identify option $op"
+		exit 1
+	esac
+done
+
+if [[ "${mount_point}x" == "x" || "${device}x" == "x" ]]  
+then
+	echo "usag: mountudisk -u user_name -m mount_point"
+	exit 1
+fi
+
+[[ "x$user_name" == x ]] && user_name=`whoami`
+
+sudo mkdir -p $mount_point
+
+sudo mount -t ext4 -o rw,nosuid,nodev,relatime,data=ordered,uhelper=udisk2 $device $mount_point
+sudo chown -R $user_name:$user_name $mount_point
+
