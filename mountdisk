@@ -25,6 +25,6 @@ fi
 
 sudo mkdir -p $mount_point
 
-sudo mount -t ext4 -o rw,nosuid,nodev,relatime,data=ordered,uhelper=udisk2 $device $mount_point
+sudo mount -t ext4 -o rw,nosuid,nodev,relatime,gid=115,data=ordered,uhelper=udisk2 $device $mount_point
 # sudo chown -R $user_name:$user_name $mount_point
 
