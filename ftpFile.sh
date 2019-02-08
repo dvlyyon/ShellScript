@@ -26,7 +26,7 @@ done
 
 [[ "$vUser" == "user" ]] && { read -t 30 -p "Please input user name:" vUser; }
 [[ "$vPasswd" == "password" ]] && { read -s -t 30 -p "Please input password:" vPasswd; }
-[[ "$vFType" == "image" ]] && { vFile="GROOVE_G30_${vLoadNum}_${vDate}.*"; }
+[[ "$vFType" == "image" ]] && { vFile="GROOVE_G30_${vLoadNum}_${vDate}*.*"; }
 
 echo -e "\n\nPlease make sure the following information:"
 echo "----------------------------------------------"
