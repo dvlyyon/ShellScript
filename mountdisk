@@ -1,30 +1,50 @@
 #!/bin/bash
-
-while getopts "u:m:d:" op
+operation="none"
+while getopts "ocm:d:n:" op
 do
 	case $op in
-	u)
-		user_name=$OPTARG;;
+	o)
+		[[ "$operation" != "none" ]] && echo "You can only do open with -o or close with -c, and NOT both"  && exit 1
+		operation=open;;
+	c)
+		[[ "$operation" != "none" ]] && echo "You can only do open with -o or close with -c, and NOT both"  && exit 1
+		operation=close;;
 	m)	
 		mount_point=$OPTARG;;
 	d)
 		device=$OPTARG;;
+	n)	
+		name=$OPTARG;;
 	?)
 		echo "cannot identify option $op"
 		exit 1
 	esac
 done
 
-if [[ "${mount_point}x" == "x" || "${device}x" == "x" ]]  
-then
-	echo "usag: mountudisk -u user_name -m mount_point"
-	exit 1
-fi
+case $operation in
+	open)
 
-[[ "x$user_name" == x ]] && user_name=`whoami`
+		if [[ "${mount_point}x" == "x" || "${device}x" == "x" || "${name}x" == "x" ]]  
+		then
+			echo "open action: must set device with -d, mount point with -m, name with -n"
+			exit 1
+		fi
 
-sudo mkdir -p $mount_point
+		read -s -t 30 -p "Please input the key file: " keyfile
 
-sudo mount -t ext4 -o rw,nosuid,nodev,relatime,gid=115,data=ordered,uhelper=udisk2 $device $mount_point
+		sudo cryptsetup luksOpen --key-file=$keyfile $device $name
+
+		sudo mkdir -p ${mount_point}/${name}
+
+		sudo mount -t ext4 -o rw,nosuid,nodev,relatime,data=ordered,uhelper=udisk2 /dev/mapper/${name} ${mount_point}/${name}
+		echo "Success: opened";;
+	close)
+		[[ "${name}x" == "x" || "${mount_point}x" == "x" ]] && echo "option n and m must be set for close" && exit 1
+		sudo umount $mount_point/$name
+		sudo cryptsetup close $name
+		echo  "Success: closed";;
+	none)
+		echo "please select action with option -o (open) or -c (close)";;
+esac
 # sudo chown -R $user_name:$user_name $mount_point
 
