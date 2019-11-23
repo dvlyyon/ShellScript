@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 from openpyxl import Workbook
 import datetime
 
@@ -85,6 +86,6 @@ c2.y_axis.crosses = "max"
 c1 += c2
 ws.add_chart(c1, "A"+str(len(data)+5))
 
-wb.save("telemetry.xlsx")
+wb.save(sys.argv[1]+".telemetry.xlsx")
 for i in range(0,7):
     file[i].close()

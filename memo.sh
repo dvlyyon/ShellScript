@@ -10,4 +10,4 @@ cat top.memo | grep -e " MF.bin" | cut -d ' ' -f 11 > MF.percpu.memo
 cat top.memo | grep -e " MF.bin" | cut -d ' ' -f 12 > MF.permemo.memo
 cat top.memo | grep -e " SMF.bin" | cut -d ' ' -f 11 > SMF.percpu.memo
 cat top.memo | grep -e " SMF.bin" | cut -d ' ' -f 12 > SMF.permemo.memo
-2excel.py
+2excel.py $1
