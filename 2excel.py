@@ -55,7 +55,7 @@ s1.graphicalProperties.line.solidFill = "FF0000"
 #s1.graphicalProperties.line.width = 100050 # width in EMUs
 
 s2 = c1.series[1]
-s2.graphicalProperties.line.solidFill = "000000"
+s2.graphicalProperties.line.solidFill = "990000"
 s2.smooth = True
 
 c2 = LineChart()
