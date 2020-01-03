@@ -9,7 +9,8 @@ do
     case ${vOption} in
         m) module=$OPTARG ;;
         o) output=$OPTARG ;;
-        ?) echo "unknown opton ${vOption}" ;;
+        ?) echo "unknown opton ${vOption}"; 
+           exit 1 ;;
     esac
 done
 
@@ -19,6 +20,8 @@ echo $module
 for p in `find . -type d`; do
     path=$p:$path
 done
+
+echo $path
 
 [[ "x${output}" == "x" ]] && output=$(basename ${module}).html
 
